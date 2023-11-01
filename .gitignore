@@ -160,3 +160,7 @@ cython_debug/
 #.idea/
 /.vscode/Pico-W-Stub
 /default_settings.py
+project.pico-w-go
+settings.json
+temps.txt
+.vscode

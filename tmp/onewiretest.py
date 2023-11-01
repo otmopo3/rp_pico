@@ -2,7 +2,6 @@ import time
 import machine
 import onewire, ds18x20
 
-# the device is on GPIO12
 dat = machine.Pin(0)
 
 print(dat.value())
