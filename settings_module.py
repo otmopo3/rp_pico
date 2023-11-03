@@ -2,13 +2,23 @@ from json_serializer import JsonSerializer
 
 
 class Settings:
-    wifi_ssid: string
-    wifi_password: string
+    wifi_ssid: str
+    wifi_password: str
 
-    mqtt_broker: string
+    mqtt_broker: str
+
+    file_log_interval: int
+    ha_publish_interval: int
+
+    temperature_measure_interval: int
+    dht11_pin: int
+
+    webserver_port: int
+    webserver_web_folder: str
+    webserver_api_prefix: str
 
 
-def load_settings(filename='settings.json'):
+def load_settings(filename='settings.json') -> Settings:
     f = open(filename)
     settings_str = f.read()
     json_helper = JsonSerializer(Settings())
@@ -26,6 +36,5 @@ def save_settings(settings, filename='settings.json'):
 
 if __name__ == '__main__':
     import settings_module
-    import wifi_network_module
     settings = settings_module.load_settings()
     print(settings.wifi_ssid)

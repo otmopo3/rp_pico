@@ -1,60 +1,45 @@
-import utime
+from AsyncTemperatureHAPublisher import AsyncTemperatureHAPublisher
+from temperature.TemperatureLogger import TemperatureLogger
+from temperature.temperature_provider import AsyncDht11TemperatureProvider, InternalTemperatureProvider
 import wifi_network_module
 import time_module
 import led_module
-import temperature_module
 import settings_module
-import machine
-import _thread
-
 import asyncio
-import sys
 from webserver.webserver_module import Webserver
-
-from mqtt_module import HaMqttPublisher
-
-
-def sync_temperature_thread(a, settings):
-    # settings = settings_module.load_settings()
-
-    ha_client = HaMqttPublisher(settings.mqtt_broker)
-
-    ha_client.publish_config()
-
-    while True:
-        temperature_module.log_temperature()
-        temperature = temperature_module.get_temperature()
-        ha_client.publish_temperature(temperature)
-        utime.sleep(300)
-        led_module.led_toggle()
 
 
 async def main():
-    settings = settings_module.load_settings()
+    settings: settings_module.Settings = settings_module.load_settings()
 
     wifi_network_module.connect_wifi(
         settings.wifi_ssid, settings.wifi_password)
 
     time_module.set_ntp_time()
 
-    ha_client = HaMqttPublisher(settings.mqtt_broker)
-
-    ha_client.publish_config()
-
-    controllers = []
-    webserver = Webserver(controllers)
+    webserver = Webserver(api_prefix=settings.webserver_api_prefix,
+                          web_folder=settings.webserver_web_folder,
+                          port=settings.webserver_port)
 
     tsf = asyncio.Event()  # type: ignore
 
     task = asyncio.create_task(webserver.run(tsf))
 
+    # tmp_provider = InternalTemperatureProvider()
+    tmp_provider = AsyncDht11TemperatureProvider(
+        pin_index=settings.dht11_pin,
+        measure_interval=settings.temperature_measure_interval)
+
+    ha_publisher = AsyncTemperatureHAPublisher(
+        settings.mqtt_broker, tsf, tmp_provider,
+        publish_interval=settings.ha_publish_interval)
+
+    tmp_logger = TemperatureLogger(
+        tmp_provider, tsf,
+        log_interval=settings.file_log_interval)
+
     while True:
         await asyncio.sleep(300)  # type: ignore
-        temperature_module.log_temperature()
-        await asyncio.sleep(0)
-        temperature = temperature_module.get_temperature()
-        ha_client.publish_temperature(temperature)
-        await asyncio.sleep(0)
         led_module.led_toggle()
 
 asyncio.run(main())

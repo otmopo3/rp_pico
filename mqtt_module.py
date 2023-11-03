@@ -4,7 +4,7 @@ import device_module
 
 
 class MqttPublisher:
-    def __init__(self, server_address, topic):
+    def __init__(self, server_address:str, topic:str):
         client_id = 'rp2 pico'
         self.mqtt_client = MQTTClient(client_id, server_address)
         self.topic = topic
@@ -21,7 +21,7 @@ class MqttPublisher:
 
 class HaMqttPublisher:
 
-    def __init__(self, server_address):
+    def __init__(self, server_address: str):
         self.dev_id = device_module.get_device_id()
         self.base_topic = 'homeassistant/sensor/sensorRp2Pico3' + self.dev_id
         self.state_topic = self.base_topic+'/state'
