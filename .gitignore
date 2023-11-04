@@ -159,7 +159,7 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 /.vscode/Pico-W-Stub
-/default_settings.py
+utils/default_settings.py
 project.pico-w-go
 settings.json
 temps.txt

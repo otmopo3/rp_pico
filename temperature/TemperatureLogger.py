@@ -1,7 +1,5 @@
 import utime
 from temperature.temperature_provider import TemperatureProvider
-
-
 import asyncio
 
 

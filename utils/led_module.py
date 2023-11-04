@@ -1,4 +1,3 @@
-import utime
 from machine import Pin
 
 led_onboard = Pin("LED", Pin.OUT)

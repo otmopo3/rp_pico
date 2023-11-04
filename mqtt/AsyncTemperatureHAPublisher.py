@@ -1,5 +1,4 @@
-import settings_module
-from mqtt_module import HaMqttPublisher
+from mqtt.mqtt_module import HaMqttPublisher
 from temperature.temperature_provider import TemperatureProvider
 import asyncio
 

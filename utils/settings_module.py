@@ -1,4 +1,4 @@
-from json_serializer import JsonSerializer
+from utils.json_serializer import JsonSerializer
 
 
 class Settings:

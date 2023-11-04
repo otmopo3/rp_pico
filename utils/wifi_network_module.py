@@ -2,7 +2,7 @@ import network
 import ubinascii
 import urequests
 import time
-import led_module
+import utils.led_module as led_module
 
 wlan = network.WLAN(network.STA_IF)
 

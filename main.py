@@ -1,10 +1,10 @@
-from AsyncTemperatureHAPublisher import AsyncTemperatureHAPublisher
+from mqtt.AsyncTemperatureHAPublisher import AsyncTemperatureHAPublisher
 from temperature.TemperatureLogger import TemperatureLogger
 from temperature.temperature_provider import AsyncDht11TemperatureProvider, InternalTemperatureProvider
-import wifi_network_module
-import time_module
-import led_module
-import settings_module
+import utils.wifi_network_module as wifi_network_module
+import utils.time_module as time_module
+import utils.led_module as led_module
+import utils.settings_module as settings_module
 import asyncio
 from webserver.webserver_module import Webserver
 

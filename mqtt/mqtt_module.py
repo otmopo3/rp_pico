@@ -1,6 +1,6 @@
-from umqttsimple import MQTTClient
+from mqtt.umqttsimple import MQTTClient
 import utime
-import device_module
+import utils.device_module as device_module
 
 
 class MqttPublisher:

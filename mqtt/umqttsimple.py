@@ -5,8 +5,10 @@ except:
 import ustruct as struct
 from ubinascii import hexlify
 
+
 class MQTTException(Exception):
     pass
+
 
 class MQTTClient:
 
@@ -70,16 +72,16 @@ class MQTTClient:
         if self.user is not None:
             sz += 2 + len(self.user) + 2 + len(self.pswd)
             msg[6] |= 0xC0
-        #if self.keepalive:
-            #assert self.keepalive < 65536
-            #msg[7] |= self.keepalive >> 8
-            #msg[8] |= self.keepalive & 0x00FF
+        # if self.keepalive:
+            # assert self.keepalive < 65536
+            # msg[7] |= self.keepalive >> 8
+            # msg[8] |= self.keepalive & 0x00FF
         if self.lw_topic:
             sz += 2 + len(self.lw_topic) + 2 + len(self.lw_msg)
             msg[6] |= 0x4 | (self.lw_qos & 0x1) << 3 | (self.lw_qos & 0x2) << 3
             msg[6] |= self.lw_retain << 5
 
-        msg[8]=0x2
+        msg[8] = 0x2
         i = 1
         while sz > 0x7f:
             premsg[i] = (sz & 0x7f) | 0x80
@@ -89,7 +91,7 @@ class MQTTClient:
 
         self.sock.write(premsg, i + 2)
         self.sock.write(msg)
-        #print(hex(len(msg)), hexlify(msg, ":"))
+        # print(hex(len(msg)), hexlify(msg, ":"))
         self._send_str(self.client_id)
         if self.lw_topic:
             self._send_str(self.lw_topic)
@@ -123,7 +125,7 @@ class MQTTClient:
             sz >>= 7
             i += 1
         pkt[i] = sz
-        #print(hex(len(pkt)), hexlify(pkt, ":"))
+        # print(hex(len(pkt)), hexlify(pkt, ":"))
         self.sock.write(pkt, i + 1)
         self._send_str(topic)
         if qos > 0:
@@ -150,7 +152,7 @@ class MQTTClient:
         pkt = bytearray(b"\x82\0\0\0")
         self.pid += 1
         struct.pack_into("!BH", pkt, 1, 2 + 2 + len(topic) + 1, self.pid)
-        #print(hex(len(pkt)), hexlify(pkt, ":"))
+        # print(hex(len(pkt)), hexlify(pkt, ":"))
         self.sock.write(pkt)
         self._send_str(topic)
         self.sock.write(qos.to_bytes(1, "little"))
@@ -158,7 +160,7 @@ class MQTTClient:
             op = self.wait_msg()
             if op == 0x90:
                 resp = self.sock.read(4)
-                #print(resp)
+                # print(resp)
                 assert resp[1] == pkt[2] and resp[2] == pkt[3]
                 if resp[3] == 0x80:
                     raise MQTTException(resp[3])
@@ -206,4 +208,3 @@ class MQTTClient:
     def check_msg(self):
         self.sock.setblocking(False)
         return self.wait_msg()
-    
