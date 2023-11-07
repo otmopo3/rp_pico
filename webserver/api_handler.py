@@ -7,12 +7,11 @@ class ApiHandler(request_handler.RequestHandler):
         super().__init__(request_lines, reader, writer)
     
     async def handle_internal(self):
-        self.writer.write('HTTP/1.0 200 OK\r\n')
-        self.writer.write('Content-type: appilcation/json\r\n\r\n')
-        self.writer.write('{pin0 : 1}')
+        await self.write_str('HTTP/1.0 200 OK\r\n')
+        await self.write_str('Content-type: appilcation/json\r\n\r\n')
+        await self.write_str('{pin0 : 1}')
 
     def handle_request(self, request_line, writer):
-
         handeled = self.try_handle_api(request_line, writer)
         if (handeled):
             return
@@ -28,3 +27,7 @@ class ApiHandler(request_handler.RequestHandler):
                 return controller
 
         return False
+
+class Controller:
+    path: str
+    

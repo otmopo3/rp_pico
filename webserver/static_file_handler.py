@@ -13,15 +13,12 @@ class StaticFileHandler(request_handler.RequestHandler):
         except Exception as ex:
             print(f"StaticFileHandler: Error serving file {file_path}:")
             print(ex)
-            self.writer.write('HTTP/1.0 404 Not found\r\n\r\n')
+            await self.write_str('HTTP/1.0 404 Not found\r\n\r\n')
             return
 
-        # todo: handle not found
-
-        self.writer.write('HTTP/1.0 200 OK\r\n')
-        self.writer.write('Content-type: text/html\r\n\r\n')
         content = file.read()
-        self.writer.write(content)
+
+        await self.write_ok(content, "text/html")
 
 
 async def main():

@@ -10,7 +10,7 @@ except:
 
 class Webserver():
     def __init__(self, port=8080, api_prefix="api", web_folder="web"):
-        
+
         self.port = port
 
     async def run(self, tsf):
@@ -20,7 +20,7 @@ class Webserver():
             print("server is working")
             await asyncio.sleep(60)
 
-    async def serve_client(self, reader, writer):
+    async def serve_client(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
         print("Client connected")
 
         request_lines = []
@@ -41,22 +41,17 @@ class Webserver():
         print("Client disconnected")
 
 
-
-
 async def main():
-
     webserver = Webserver()
-
     tsf = asyncio.Event()  # type: ignore
-
     task = asyncio.create_task(webserver.run(tsf))
 
     while True:
         await asyncio.sleep(10)
 
 if __name__ == '__main__':
-    import settings_module
-    import wifi_network_module
+    import utils.settings_module as settings_module
+    import utils.wifi_network_module as wifi_network_module
     settings = settings_module.load_settings()
     wifi_network_module.connect_wifi(
         settings.wifi_ssid, settings.wifi_password)

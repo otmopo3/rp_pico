@@ -2,3 +2,6 @@ GET http://{{rp2host}}:{{rp2httpport}}/index.html
 
 #####
 GET http://{{rp2host}}:{{rp2httpport}}/main.html
+
+#####
+GET http://{{rp2host}}:{{rp2httpport}}/api/dfsf
