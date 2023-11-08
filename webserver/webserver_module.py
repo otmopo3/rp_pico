@@ -24,11 +24,11 @@ class Webserver():
         print("Client connected")
 
         request_lines = []
-        cur_line = await reader.readline()
-        while cur_line != b"\r\n":
+        cur_line = (await reader.readline()).decode('utf-8')
+        while cur_line != "\r\n":
             request_lines.append(cur_line)
             print(cur_line)
-            cur_line = await reader.readline()
+            cur_line = (await reader.readline()).decode('utf-8')
 
         req_line = request_lines[0]
         if ("/api/" in req_line):

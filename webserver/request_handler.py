@@ -2,7 +2,7 @@ from asyncio import StreamReader, StreamWriter
 
 
 class RequestHandler():
-    def __init__(self, request_lines, reader: StreamReader, writer: StreamWriter):
+    def __init__(self, request_lines: list[str], reader: StreamReader, writer: StreamWriter):
         self.request_lines = request_lines
         self.reader = reader
         self.writer = writer
