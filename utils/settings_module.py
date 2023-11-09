@@ -21,6 +21,7 @@ class Settings:
 def load_settings(filename='settings.json') -> Settings:
     f = open(filename)
     settings_str = f.read()
+    print(f"Loaded settings: {settings_str}")
     json_helper = JsonSerializer(Settings())
     loaded_settings = json_helper.Deserialize(settings_str)
     return loaded_settings

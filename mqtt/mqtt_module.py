@@ -4,7 +4,7 @@ import utils.device_module as device_module
 
 
 class MqttPublisher:
-    def __init__(self, server_address:str, topic:str):
+    def __init__(self, server_address: str, topic: str):
         client_id = 'rp2 pico'
         self.mqtt_client = MQTTClient(client_id, server_address)
         self.topic = topic
@@ -49,7 +49,7 @@ class HaMqttPublisher:
         except Exception as ex:
             print(f'Error pusblishing Home Assistant Mqtt config: {ex}')
 
-    def publish_temperature(self, temperature):
+    def publish_temperature(self, temperature: float):
         try:
             temp_str = str(temperature)
 
@@ -62,7 +62,7 @@ class HaMqttPublisher:
 
             mqtt_publisher.disconnect()
 
-            print('Pusblished Home Assistant Mqtt temperature')
+            print(f'Pusblished Home Assistant Mqtt temperature={temperature}')
         except Exception as ex:
             print(f'Error pusblishing Home Assistant Mqtt temperature: {ex}')
 

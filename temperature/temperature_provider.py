@@ -8,7 +8,7 @@ class TemperatureProvider():
     def __init__(self) -> None:
         pass
 
-    async def get_temperature(self) -> int:
+    async def get_temperature(self) -> float:
         await asyncio.sleep(0)
         return 0
 
@@ -21,7 +21,7 @@ class InternalTemperatureProvider(TemperatureProvider):
         super().__init__()
         self.sensor_temp = machine.ADC(4)
 
-    async def get_temperature(self):
+    async def get_temperature(self) -> float:
         raw_value = self.sensor_temp.read_u16()
         await asyncio.sleep(0)
         voltage = raw_value * self.conversion_factor
@@ -43,27 +43,31 @@ class AsyncDht11TemperatureProvider(TemperatureProvider):
         self.sensor = dht.DHT11(machine.Pin(pin_index))
         self.measure_interval_ms = measure_interval * 1000
 
-    async def get_temperature(self) -> int:
+    async def get_temperature(self) -> float:
         await self.measure_if_need()
         return self.sensor.temperature()
 
     async def measure_if_need(self) -> None:
         sensor = self.sensor
         await self.lock.acquire()
-        ticks_ms_now = time.ticks_ms()
-        last_measure_diff_ms = time.ticks_diff(ticks_ms_now, self.last_measure)
-        if (self.last_measure > 0 and last_measure_diff_ms < self.measure_interval_ms):
-            return
 
         try:
-            sensor.measure()
-            self.last_measure = ticks_ms_now
-            print(f"AsyncDht11TemperatureProvider: measure temperature")
-        except Exception as ex:
-            print(
-                f"AsyncDht11TemperatureProvider: Error measuring temprature on sensor{sensor.pin} {ex}:")
+            ticks_ms_now = time.ticks_ms()
+            last_measure_diff_ms = time.ticks_diff(
+                ticks_ms_now, self.last_measure)
+            if (self.last_measure > 0 and last_measure_diff_ms < self.measure_interval_ms):
+                return
 
-        self.lock.release()
+            try:
+                sensor.measure()
+                self.last_measure = ticks_ms_now
+                print(f"AsyncDht11TemperatureProvider: measure temperature")
+            except Exception as ex:
+                print(
+                    f"AsyncDht11TemperatureProvider: Error measuring temprature on sensor{sensor.pin} {ex}:")
+        finally:
+            self.lock.release()
+
         await asyncio.sleep(0)
 
 
