@@ -1,6 +1,6 @@
 from mqtt.AsyncTemperatureHAPublisher import AsyncTemperatureHAPublisher
 from temperature.TemperatureLogger import TemperatureLogger
-from temperature.temperature_provider import AsyncDht11TemperatureProvider, InternalTemperatureProvider
+from temperature.temperature_provider import AsyncDht22TemperatureProvider, AsyncDhtTemperatureProvider, InternalTemperatureProvider
 import utils.wifi_network_module as wifi_network_module
 import utils.time_module as time_module
 import utils.led_module as led_module
@@ -26,7 +26,7 @@ async def main():
     task = asyncio.create_task(webserver.run(tsf))
 
     # tmp_provider = InternalTemperatureProvider()
-    tmp_provider = AsyncDht11TemperatureProvider(
+    tmp_provider = AsyncDht22TemperatureProvider(
         pin_index=settings.dht11_pin,
         measure_interval=settings.temperature_measure_interval)
 

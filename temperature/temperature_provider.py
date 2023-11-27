@@ -32,20 +32,19 @@ class InternalTemperatureProvider(TemperatureProvider):
         return temperature
 
 
-class AsyncDht11TemperatureProvider(TemperatureProvider):
-    sensor: dht.DHT11
+class AsyncDhtTemperatureProvider(TemperatureProvider):
+    sensor: dht.DHTBase
     measure_interval_ms: int
     last_measure: int = 0
     lock: asyncio.Lock = asyncio.Lock()
 
-    def __init__(self, pin_index: int, measure_interval=300) -> None:
-        super().__init__()
-        self.sensor = dht.DHT11(machine.Pin(pin_index))
+    def __init__(self, measure_interval=300) -> None:
+        super().__init__()        
         self.measure_interval_ms = measure_interval * 1000
 
     async def get_temperature(self) -> float:
         await self.measure_if_need()
-        return self.sensor.temperature()
+        return self.sensor.temperature() # type: ignore
 
     async def measure_if_need(self) -> None:
         sensor = self.sensor
@@ -70,9 +69,19 @@ class AsyncDht11TemperatureProvider(TemperatureProvider):
 
         await asyncio.sleep(0)
 
+class AsyncDht11TemperatureProvider(AsyncDhtTemperatureProvider):
+        def __init__(self, pin_index: int, measure_interval=300) -> None:
+            super().__init__(measure_interval)
+            self.sensor = dht.DHT11(machine.Pin(pin_index))
+            
+class AsyncDht22TemperatureProvider(AsyncDhtTemperatureProvider):
+        def __init__(self, pin_index: int, measure_interval=300) -> None:
+            super().__init__(measure_interval)
+            self.sensor = dht.DHT22(machine.Pin(pin_index))
+    
 
 async def main():
-    provider = AsyncDht11TemperatureProvider(0)
+    provider = AsyncDhtTemperatureProvider(0)
     temp = await provider.get_temperature()
     print(temp)
 

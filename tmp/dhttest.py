@@ -2,7 +2,7 @@ import dht
 import machine
 
 
-d = dht.DHT11(machine.Pin(0))
+d = dht.DHT22(machine.Pin(0))
 
 d.measure()
 print(d.temperature())
