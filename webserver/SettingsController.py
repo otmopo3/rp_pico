@@ -4,17 +4,11 @@ from webserver.ControllerFactory import Controller, ControllerFactory
 
 
 class SettingsController(Controller):
-    def __init__(self) -> None:
-        super().__init__()
-
     def get(self):
         print("SettingsController.get")
 
         settings = settings_module.load_settings()
-        json_helper = JsonSerializer(settings)
-        json_str = json_helper.Serialize()
-
-        return json_str
+        return settings
 
 
 class SettingsControllerFactory(ControllerFactory):
