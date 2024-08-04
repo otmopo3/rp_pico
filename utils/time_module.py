@@ -2,6 +2,7 @@ import time
 import utime
 import ntptime
 
+
 def set_ntp_time():
     try:
         print(time.localtime())
@@ -11,13 +12,15 @@ def set_ntp_time():
 
         print(time.localtime())
         print(utime.gmtime())
-    except:
-        print("Couldn't set time")
+    except Exception as ex:
+        print(f"Couldn't set time {ex}")
+
 
 def sleep(time_to_sleep):
     utime.sleep(time_to_sleep)
-    
+
+
 if __name__ == '__main__':
-    time = format(utime.localtime())
-    print(time)
-    print(f'{time:02d}')
+    ctime = utime.localtime()
+    print(ctime)
+    set_ntp_time()

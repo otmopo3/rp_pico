@@ -6,26 +6,30 @@ import utils.led_module as led_module
 
 wlan = network.WLAN(network.STA_IF)
 
+
 def connect_wifi(wlan_ssid, password, max_attempts=-1, uri_to_test='', status_check_timeout=1):
     log_wlan_info()
 
     # Disable power-save mode
-    wlan.config(pm = network.WLAN.PM_PERFORMANCE) # type: ignore
+    wlan.config(pm=network.WLAN.PM_PERFORMANCE)  # type: ignore
 
     wlan.active(True)
-    #wlan.disconnect()
-   
-    #print("disconnected")
+
     time.sleep(1)
     if (not wlan.active()):
         wlan.active(True)
-    wlan.connect(wlan_ssid, password)
-    print("wlan.connect")
-    wait_connection(max_attempts, status_check_timeout)
-    handle_connection_result(uri_to_test)
+
+    connected: bool = False
+    while not connected:
+        wlan.connect(wlan_ssid, password)
+        print("wlan.connect")
+        wait_connection(max_attempts, status_check_timeout)
+        connected = handle_connection_result(uri_to_test)
+        if not connected:
+            time.sleep(status_check_timeout)
 
 
-def handle_connection_result(uri_to_test):
+def handle_connection_result(uri_to_test) -> bool:
     if wlan.status() >= network.STAT_GOT_IP:
         print("Connected")
         client_ip, subnet, gateway, DNS = wlan.ifconfig()
@@ -40,15 +44,22 @@ def handle_connection_result(uri_to_test):
                 r.close()
             except Exception as exception:
                 print(f'Error connecting to test url: {exception}')
-    else:
-        print("!!!Connection failed!!!")
+                return False
 
-    print('wlan_status=' + str(wlan.status()))
+        return True
+    else:
+        print(
+            f'!!!Connection failed!!! wlan_status= {str(wlan.status())} Going to reconnect in few seconds')
+
+    return False
 
 
 def wait_connection(max_attempts, status_check_timeout):
     while max_attempts != 0:
         if wlan.status() >= network.STAT_GOT_IP:
+            break
+
+        if wlan.status() < network.STAT_IDLE:
             break
 
         if max_attempts > 0:
@@ -65,10 +76,6 @@ def get_ip():
 
 
 def log_wlan_info():
-    wlan.active(False)
-    print('wlan_status=' + str(wlan.status()))
-    wlan.active(True)
-    print('wlan_status=' + str(wlan.status()))
     mac_part = wlan.config('mac')
 
     mac = ubinascii.hexlify(mac_part, ':').decode()  # type: ignore
@@ -77,7 +84,7 @@ def log_wlan_info():
 
 
 if __name__ == '__main__':
-    import settings_module
+    import utils.settings_module as settings_module
     settings = settings_module.load_settings()
     connect_wifi(settings.wifi_ssid, settings.wifi_password,
-                 uri_to_test="http://www.google.com/")
+                 uri_to_test="https://wiby.me/")
